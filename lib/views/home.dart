@@ -271,6 +271,7 @@ class _Home extends State<Home> {
                       fontSize: 15.0),
                 ),
                 onPressed: () {
+                  Navigator.of(context).pop();
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ShowTicket(
                       ticket: ticket,

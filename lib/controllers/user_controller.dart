@@ -3,7 +3,9 @@ import 'dart:convert' as convert;
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:mesa_ayuda/models/usuario.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
 class UserController {
   Future<bool> apiLogin(String email, String password) async {
@@ -13,22 +15,46 @@ class UserController {
     var response = await http.post(url);
     //print(response.body);
     if (response.statusCode == 200) {
-      try {
-        var jsonResponse =
-            convert.jsonDecode(response.body) as Map<String, dynamic>;
-        if (jsonResponse['estatus'] == 1) {
-          SharedPreferences localStorage =
-              await SharedPreferences.getInstance();
-          localStorage.setString("auth_token", jsonResponse['auth_token']);
-          return true;
-        } else {
-          return false;
-        }
-      } catch (e) {
+      //try {
+      var jsonResponse =
+          convert.jsonDecode(response.body) as Map<String, dynamic>;
+      if (jsonResponse['estatus'] == 1) {
+        //TODO:Confirmar si el usuario está activo
+        SharedPreferences localStorage = await SharedPreferences.getInstance();
+        localStorage.setString("auth_token", jsonResponse['auth_token']);
+        localStorage.setString(
+            "usuario",
+            json.encode({
+              'id': jsonResponse['usuario']['id'],
+              'rol_id': jsonResponse['usuario']['rol_id'],
+              'cliente_id': jsonResponse['usuario']['cliente_id'],
+              'estatus': jsonResponse['usuario']['estatus'],
+              'nombre': jsonResponse['usuario']['nombre'],
+              'apaterno': jsonResponse['usuario']['apaterno'],
+              'amaterno': jsonResponse['usuario']['amaterno'],
+              'telefono': jsonResponse['usuario']['telefono'],
+              'telefono_emergencia': jsonResponse['usuario']
+                  ['telefono_emergencia'],
+              'email': jsonResponse['usuario']['email'],
+              'direccion': jsonResponse['usuario']['direccion'],
+              'imagen': jsonResponse['usuario']['imagen'],
+            }));
+        Usuario u = Usuario.fromJson(
+            json.decode(localStorage.getString("usuario") ?? ""));
+        print("El usuario " +
+            u.nombre +
+            " " +
+            u.apaterno +
+            " inició sesión correctamente...");
+        return true;
+      } else {
         return false;
       }
+      // } catch (e) {
+      //   return false;
+      // }
     } else {
-      //print('Request failed with status: ${response.body}.');
+      print('Request failed with status: ${response.body}.');
       return false;
     }
   }
@@ -83,6 +109,30 @@ class UserController {
         String body = utf8.decode(response.bodyBytes);
         jsonResponse = convert.jsonDecode(body) as Map<String, dynamic>;
         if (jsonResponse['estatus'] == 1) {
+          localStorage.setString(
+              "usuario",
+              json.encode({
+                'id': jsonResponse['usuario']['id'],
+                'rol_id': jsonResponse['usuario']['rol_id'],
+                'cliente_id': jsonResponse['usuario']['cliente_id'],
+                'estatus': jsonResponse['usuario']['estatus'],
+                'nombre': jsonResponse['usuario']['nombre'],
+                'apaterno': jsonResponse['usuario']['apaterno'],
+                'amaterno': jsonResponse['usuario']['amaterno'],
+                'telefono': jsonResponse['usuario']['telefono'],
+                'telefono_emergencia': jsonResponse['usuario']
+                    ['telefono_emergencia'],
+                'email': jsonResponse['usuario']['email'],
+                'direccion': jsonResponse['usuario']['direccion'],
+                'imagen': jsonResponse['usuario']['imagen'],
+              }));
+          Usuario u = Usuario.fromJson(
+              json.decode(localStorage.getString("usuario") ?? ""));
+          print("El usuario " +
+              u.nombre +
+              " " +
+              u.apaterno +
+              " inició sesión de nuevo correctamente...");
           return true;
         } else {
           localStorage.remove('auth_token');
@@ -96,5 +146,11 @@ class UserController {
       localStorage.remove('auth_token');
       return false;
     }
+  }
+
+  Future<Usuario> usuarioLogueado() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return Usuario.fromJson(
+        json.decode(localStorage.getString("usuario") ?? ""));
   }
 }
