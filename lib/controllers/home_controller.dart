@@ -12,14 +12,8 @@ class HomeController {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     String authToken = localStorage.getString("auth_token").toString();
 
-    var url;
-    if (dotenv.env['APP_DEBUG'].toString() == "true") {
-      url = Uri.https(dotenv.env['SERVER_URL'].toString(),
-          '${dotenv.env['PROJECT_PATH']}api-home');
-    } else {
-      url = Uri.http(dotenv.env['SERVER_URL'].toString(),
-          '${dotenv.env['PROJECT_PATH']}api-home');
-    }
+    var url = Uri.http(dotenv.env['SERVER_URL'].toString(),
+        '${dotenv.env['PROJECT_PATH']}api-home');
     var response = await http.get(
       url,
       headers: {
@@ -27,8 +21,6 @@ class HomeController {
       },
     );
 
-    // var jsonResponse =
-    //     convert.jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode == 200) {
       try {
         String body = utf8.decode(response.bodyBytes);

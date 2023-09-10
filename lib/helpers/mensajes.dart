@@ -109,3 +109,7 @@ Future mensajeTest(context) async {
         );
       });
 }
+
+void quitarMensajeFlash(context) {
+  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+}
