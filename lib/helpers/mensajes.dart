@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesa_ayuda/views/descargar_version.dart';
 
 Future<void> mensajeEmergente(context, String titulo, String texto) async {
   return showDialog(
@@ -112,4 +113,48 @@ Future mensajeTest(context) async {
 
 void quitarMensajeFlash(context) {
   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+}
+
+Future<void> mensajeNuevaVersion(
+    context, String titulo, String texto, String nuevaVersion) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(titulo),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(texto),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.red),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text(
+              'Descargar ahora',
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
+            onPressed: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          DescargarVersion(nuevaVersion: nuevaVersion)),
+                  (route) => false);
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

@@ -13,46 +13,23 @@ class UserController {
     var url = Uri.http(dotenv.env['SERVER_URL'].toString(),
         '${dotenv.env['PROJECT_PATH']}api-login', datos);
     var response = await http.post(url);
-    //print(response.body);
     if (response.statusCode == 200) {
-      //try {
-      var jsonResponse =
-          convert.jsonDecode(response.body) as Map<String, dynamic>;
-      if (jsonResponse['estatus'] == 1) {
-        //TODO:Confirmar si el usuario está activo
-        SharedPreferences localStorage = await SharedPreferences.getInstance();
-        localStorage.setString("auth_token", jsonResponse['auth_token']);
-        localStorage.setString(
-            "usuario",
-            json.encode({
-              'id': jsonResponse['usuario']['id'],
-              'rol_id': jsonResponse['usuario']['rol_id'],
-              'cliente_id': jsonResponse['usuario']['cliente_id'],
-              'estatus': jsonResponse['usuario']['estatus'],
-              'nombre': jsonResponse['usuario']['nombre'],
-              'apaterno': jsonResponse['usuario']['apaterno'],
-              'amaterno': jsonResponse['usuario']['amaterno'],
-              'telefono': jsonResponse['usuario']['telefono'],
-              'telefono_emergencia': jsonResponse['usuario']
-                  ['telefono_emergencia'],
-              'email': jsonResponse['usuario']['email'],
-              'direccion': jsonResponse['usuario']['direccion'],
-              'imagen': jsonResponse['usuario']['imagen'],
-            }));
-        Usuario u = Usuario.fromJson(
-            json.decode(localStorage.getString("usuario") ?? ""));
-        print("El usuario " +
-            u.nombre +
-            " " +
-            u.apaterno +
-            " inició sesión correctamente...");
-        return true;
-      } else {
+      try {
+        var jsonResponse =
+            convert.jsonDecode(response.body) as Map<String, dynamic>;
+        if (jsonResponse['estatus'] == 1) {
+          //TODO:Confirmar si el usuario está activo
+          SharedPreferences localStorage =
+              await SharedPreferences.getInstance();
+          localStorage.setString("auth_token", jsonResponse['auth_token']);
+          guardarUsuarioLogeado(jsonResponse['usuario']);
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
         return false;
       }
-      // } catch (e) {
-      //   return false;
-      // }
     } else {
       print('Request failed with status: ${response.body}.');
       return false;
@@ -70,7 +47,6 @@ class UserController {
         HttpHeaders.authorizationHeader: 'Bearer $authToken',
       },
     );
-    //print(response.body);
     if (response.statusCode == 200) {
       try {
         var jsonResponse =
@@ -102,37 +78,14 @@ class UserController {
         HttpHeaders.authorizationHeader: 'Bearer $authToken',
       },
     );
-    //print(response.body);
+
     if (response.statusCode == 200) {
       try {
         Map<String, dynamic> jsonResponse;
         String body = utf8.decode(response.bodyBytes);
         jsonResponse = convert.jsonDecode(body) as Map<String, dynamic>;
         if (jsonResponse['estatus'] == 1) {
-          localStorage.setString(
-              "usuario",
-              json.encode({
-                'id': jsonResponse['usuario']['id'],
-                'rol_id': jsonResponse['usuario']['rol_id'],
-                'cliente_id': jsonResponse['usuario']['cliente_id'],
-                'estatus': jsonResponse['usuario']['estatus'],
-                'nombre': jsonResponse['usuario']['nombre'],
-                'apaterno': jsonResponse['usuario']['apaterno'],
-                'amaterno': jsonResponse['usuario']['amaterno'],
-                'telefono': jsonResponse['usuario']['telefono'],
-                'telefono_emergencia': jsonResponse['usuario']
-                    ['telefono_emergencia'],
-                'email': jsonResponse['usuario']['email'],
-                'direccion': jsonResponse['usuario']['direccion'],
-                'imagen': jsonResponse['usuario']['imagen'],
-              }));
-          Usuario u = Usuario.fromJson(
-              json.decode(localStorage.getString("usuario") ?? ""));
-          print("El usuario " +
-              u.nombre +
-              " " +
-              u.apaterno +
-              " inició sesión de nuevo correctamente...");
+          guardarUsuarioLogeado(jsonResponse['usuario']);
           return true;
         } else {
           localStorage.remove('auth_token');
@@ -145,6 +98,31 @@ class UserController {
     } else {
       localStorage.remove('auth_token');
       return false;
+    }
+  }
+
+  void guardarUsuarioLogeado(usuario) async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    try {
+      localStorage.setString(
+          "usuario",
+          json.encode({
+            'id': usuario['id'],
+            'rol_id': usuario['rol_id'],
+            'cliente_id': usuario['cliente_id'],
+            'estatus': usuario['estatus'],
+            'nombre': usuario['nombre'],
+            'apaterno': usuario['apaterno'],
+            'amaterno': usuario['amaterno'],
+            'telefono': usuario['telefono'],
+            'telefono_emergencia': usuario['telefono_emergencia'],
+            'email': usuario['email'],
+            'direccion': usuario['direccion'],
+            'imagen': usuario['imagen'],
+          }));
+      //print("Usuario guardado");
+    } catch (e) {
+      print(e);
     }
   }
 

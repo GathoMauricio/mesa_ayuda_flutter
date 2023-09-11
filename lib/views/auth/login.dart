@@ -49,8 +49,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    _email.text = "mauricio2769@gmail.com";
-    _password.text = "Hannibal2769";
+    _email.text = "test@mail.com";
+    _password.text = "12345678";
     return hayToken
         ? Home()
         : Scaffold(
@@ -321,6 +321,17 @@ class _LoginState extends State<Login> {
                                     fontWeight: FontWeight.w500,
                                     fontStyle: FontStyle.italic),
                               ),
+                            ),
+                            MaterialButton(
+                              onPressed: () {},
+                              color: Colors.green,
+                              textColor: Colors.white,
+                              child: Icon(
+                                Icons.phone_android,
+                                size: 30,
+                              ),
+                              padding: EdgeInsets.all(16),
+                              shape: CircleBorder(),
                             )
                           ],
                         ),
