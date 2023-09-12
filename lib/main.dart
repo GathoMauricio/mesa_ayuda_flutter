@@ -53,8 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
       if (hayNuevaVersion['estatus']) {
         mensajes.mensajeNuevaVersion(
             context,
-            "Versión disponible: " + hayNuevaVersion['version'],
-            "Actualmente se ejecuta la versión ${dotenv.env['APP_VERSION']} le sugerimos descargar la versión más reciente.",
+            "Versión disponible: " +
+                hayNuevaVersion['version'].toString().replaceAll("_", "."),
+            "Actualmente se ejecuta la versión ${dotenv.env['APP_VERSION'].toString().replaceAll("_", ".")} le sugerimos descargar la versión más reciente.",
             hayNuevaVersion['version']);
       }
     });

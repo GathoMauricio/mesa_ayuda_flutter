@@ -4,8 +4,9 @@ import 'package:lottie/lottie.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mesa_ayuda/views/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:validators/validators.dart';
+import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
+import '../../controllers/home_controller.dart';
 import '../../controllers/user_controller.dart';
 
 class Login extends StatefulWidget {
@@ -323,16 +324,44 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             MaterialButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                var hayNuevaVersion = await HomeController()
+                                    .hayNuevaVersion() as Map<String, dynamic>;
+                                print(hayNuevaVersion['estatus']);
+                                if (hayNuevaVersion['estatus']) {
+                                  mensajes.mensajeNuevaVersion(
+                                      context,
+                                      "Versión disponible: " +
+                                          hayNuevaVersion['version']
+                                              .toString()
+                                              .replaceAll("_", "."),
+                                      "Actualmente se ejecuta la versión ${dotenv.env['APP_VERSION'].toString().replaceAll("_", ".")} le sugerimos descargar la versión más reciente.",
+                                      hayNuevaVersion['version']);
+                                } else {
+                                  mensajes.mensajeNuevaVersion(
+                                      context,
+                                      "Última versión: " +
+                                          hayNuevaVersion['version']
+                                              .toString()
+                                              .replaceAll("_", "."),
+                                      "Actualmente se ejecuta la versión ${dotenv.env['APP_VERSION'].toString().replaceAll("_", ".")} \n¿Desea dergargarla de todas formas?.",
+                                      hayNuevaVersion['version']);
+                                }
+                              },
                               color: Colors.green,
                               textColor: Colors.white,
-                              child: Icon(
-                                Icons.phone_android,
+                              child: const Icon(
+                                Icons.downloading,
                                 size: 30,
                               ),
                               padding: EdgeInsets.all(16),
                               shape: CircleBorder(),
-                            )
+                            ),
+                            Text(
+                                "v. ${dotenv.env['APP_VERSION'].toString().replaceAll("_", ".")}",
+                                style: TextStyle(
+                                  color: Colors.purple,
+                                )),
                           ],
                         ),
                       ],

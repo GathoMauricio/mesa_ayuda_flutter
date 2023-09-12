@@ -122,7 +122,8 @@ Future<void> mensajeNuevaVersion(
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(titulo),
+        title:
+            Text(titulo, style: TextStyle(color: Colors.green, fontSize: 18.0)),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
