@@ -36,11 +36,8 @@ class _LoginState extends State<Login> {
           hayToken = true;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text("Token inválido favor de iniciar sesión de nuevo.")),
-        );
+        mensajes.mensajeFlash(
+            context, "Token inváido, favor de iniciar sesión de nuevo.");
       }
     }
   }
@@ -210,61 +207,21 @@ class _LoginState extends State<Login> {
                                       onPressed: () async {
                                         if (_email.text.isNotEmpty &&
                                             _password.text.isNotEmpty) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    "Validando información")),
-                                          );
-
                                           Future<bool> acceso =
-                                              userController.apiLogin(
+                                              userController.apiLogin(context,
                                                   _email.text, _password.text);
                                           if (await acceso) {
-                                            ScaffoldMessenger.of(context)
-                                                .removeCurrentSnackBar();
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                  content:
-                                                      Text("Acceso correcto")),
-                                            );
                                             Navigator.of(context)
                                                 .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             const Home()),
                                                     (route) => false);
-                                          } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                  content: Text(
-                                                      "Error durante la petición")),
-                                            );
                                           }
                                         } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    "Todos los campos son obligatorios.")),
-                                          );
+                                          mensajes.mensajeFlash(context,
+                                              "Todos los campos son obligatorios.");
                                         }
-
-                                        // if (_formKey.currentState!.validate()) {
-                                        //   // If the form is valid, display a snackbar. In the real world,
-                                        //   // you'd often call a server or save the information in a database.
-                                        //   ScaffoldMessenger.of(context).showSnackBar(
-                                        //     const SnackBar(
-                                        //         content:
-                                        //             Text('Procesando información')),
-                                        //   );
-                                        // }
-                                        // Navigator.push(
-                                        //     context,
-                                        //     MaterialPageRoute(
-                                        //         builder: (context) => loginScreen()));
                                       },
                                       child: const Text(
                                         'Entrar',

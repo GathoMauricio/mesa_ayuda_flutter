@@ -8,29 +8,38 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
 class UserController {
-  Future<bool> apiLogin(String email, String password) async {
+  Future<bool> apiLogin(context, String email, String password) async {
     var datos = {"email": email, "password": password};
+    mensajes.mensajeFlash(context, "Validando...");
     var url = Uri.http(dotenv.env['SERVER_URL'].toString(),
         '${dotenv.env['PROJECT_PATH']}api-login', datos);
     var response = await http.post(url);
+    mensajes.quitarMensajeFlash(context);
+    print(response.body);
     if (response.statusCode == 200) {
       try {
         var jsonResponse =
             convert.jsonDecode(response.body) as Map<String, dynamic>;
         if (jsonResponse['estatus'] == 1) {
           //TODO:Confirmar si el usuario está activo
+
           SharedPreferences localStorage =
               await SharedPreferences.getInstance();
           localStorage.setString("auth_token", jsonResponse['auth_token']);
           guardarUsuarioLogeado(jsonResponse['usuario']);
+          mensajes.mensajeFlash(
+              context, "Bienvenid@ " + jsonResponse['usuario']['nombre']);
           return true;
         } else {
+          mensajes.mensajeFlash(context, jsonResponse['mensaje']);
           return false;
         }
       } catch (e) {
+        mensajes.mensajeFlash(context, "Error durante el proceso");
         return false;
       }
     } else {
+      mensajes.mensajeFlash(context, "Respuesta erronea del servidor");
       print('Request failed with status: ${response.body}.');
       return false;
     }
