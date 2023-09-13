@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mesa_ayuda/controllers/home_controller.dart';
-import 'package:mesa_ayuda/controllers/user_controller.dart';
-import 'package:mesa_ayuda/models/ticket.dart';
+import 'package:mesa_ayuda/controllers/HomeController.dart';
+import 'package:mesa_ayuda/controllers/UserController.dart';
+import 'package:mesa_ayuda/models/Ticket.dart';
 import 'package:mesa_ayuda/views/auth/login.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
+import 'package:mesa_ayuda/views/tickets/create_ticket.dart';
 import 'package:mesa_ayuda/views/tickets/show_ticket.dart';
 
 class Home extends StatefulWidget {
@@ -23,10 +24,9 @@ class _Home extends State<Home> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.blue,
         onPressed: () {
-          //TODO:Ir a ventana de crear ticket
-          mensajes.mensajeEmergente(
-              context, "To Do:", "Ir a ventana de crear ticket");
-          mensajes.mensajeFlash(context, "To Do: Ir a ventana de crear ticket");
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => CreateTicket(),
+          ));
         },
         label: const Text(
           'Iniciar Ticket',

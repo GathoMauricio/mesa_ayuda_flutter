@@ -8,6 +8,32 @@ class Ticket {
   late String folio;
   late String prioridad;
   late String descripcion;
+  late int sintomaId;
   Ticket(this.id, this.estatus, this.area, this.categoria, this.sintoma,
       this.usuarioFinal, this.folio, this.prioridad, this.descripcion);
+
+  Ticket.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        estatus = json['estatus'],
+        area = json['area'],
+        categoria = json['categoria'],
+        sintoma = json['sintoma'],
+        usuarioFinal = json['usuarioFinal'],
+        folio = json['folio'],
+        prioridad = json['prioridad'],
+        descripcion = json['descripcion'],
+        sintomaId = json['sintomaId'];
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'estatus': estatus,
+        'area': area,
+        'categoria': categoria,
+        'sintoma': sintoma,
+        'usuarioFinal': usuarioFinal,
+        'folio': folio,
+        'prioridad': prioridad,
+        'descripcion': descripcion,
+        'sintomaId': sintomaId,
+      };
 }

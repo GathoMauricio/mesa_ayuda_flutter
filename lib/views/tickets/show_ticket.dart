@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
-import '../../models/ticket.dart';
+import '../../models/Ticket.dart';
 
 class ShowTicket extends StatefulWidget {
   Ticket ticket;

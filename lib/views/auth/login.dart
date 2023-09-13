@@ -6,8 +6,8 @@ import 'package:mesa_ayuda/views/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
-import '../../controllers/home_controller.dart';
-import '../../controllers/user_controller.dart';
+import '../../controllers/HomeController.dart';
+import '../../controllers/UserController.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -23,7 +23,6 @@ class _LoginState extends State<Login> {
 
   @override
   void initState() {
-    print("Inciar login");
     super.initState();
     _comprobarToken();
   }
@@ -284,7 +283,7 @@ class _LoginState extends State<Login> {
                               onPressed: () async {
                                 var hayNuevaVersion = await HomeController()
                                     .hayNuevaVersion() as Map<String, dynamic>;
-                                print(hayNuevaVersion['estatus']);
+
                                 if (hayNuevaVersion['estatus']) {
                                   mensajes.mensajeNuevaVersion(
                                       context,

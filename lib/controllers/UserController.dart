@@ -3,7 +3,7 @@ import 'dart:convert' as convert;
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:mesa_ayuda/models/usuario.dart';
+import 'package:mesa_ayuda/models/Usuario.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
@@ -15,7 +15,7 @@ class UserController {
         '${dotenv.env['PROJECT_PATH']}api-login', datos);
     var response = await http.post(url);
     mensajes.quitarMensajeFlash(context);
-    print(response.body);
+
     if (response.statusCode == 200) {
       try {
         var jsonResponse =
@@ -129,7 +129,6 @@ class UserController {
             'direccion': usuario['direccion'],
             'imagen': usuario['imagen'],
           }));
-      //print("Usuario guardado");
     } catch (e) {
       print(e);
     }

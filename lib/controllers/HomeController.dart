@@ -1,10 +1,9 @@
 import 'dart:convert' as convert;
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
-import 'package:mesa_ayuda/models/ticket.dart';
+import 'package:mesa_ayuda/models/Ticket.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,9 +25,8 @@ class HomeController {
 
     if (response.statusCode == 200) {
       try {
-        String body = utf8.decode(response.bodyBytes);
+        String body = convert.utf8.decode(response.bodyBytes);
         var jsonData = convert.jsonDecode(body);
-        //print(jsonData['datos']);
         for (var item in jsonData['datos']) {
           lista.add(Ticket(
               item['id'],
@@ -53,9 +51,7 @@ class HomeController {
   Future<Object> hayNuevaVersion() async {
     var url = Uri.http(dotenv.env['SERVER_URL'].toString(),
         '${dotenv.env['PROJECT_PATH']}api-ultima-version-android');
-    print('${dotenv.env['PROJECT_PATH']}api-ultima-version-android');
     var response = await http.post(url);
-    //print(response.body);
     if (response.statusCode == 200) {
       try {
         var jsonResponse =

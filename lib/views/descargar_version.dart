@@ -39,12 +39,11 @@ class _DescargarVersionState extends State<DescargarVersion> {
   }
 
   Future<void> descargarArchivo() async {
-    print(url);
     Dio dio = Dio();
     try {
       var dir = await getExternalStorageDirectory();
       ruta = "${dir?.path}/mesa_ayuda_" + widget.nuevaVersion + ".apk";
-      print(ruta);
+
       await dio.download(url, ruta, onReceiveProgress: (rec, total) {
         setState(() {
           progreso =
@@ -135,10 +134,9 @@ class _DescargarVersionState extends State<DescargarVersion> {
       return ElevatedButton(
         onPressed: () async {
           if (await File(ruta).exists()) {
-            print("Si existe la ruta");
             OpenFile.open(ruta);
           } else {
-            print("Naiz de perro gris");
+            print("No se encontró la ruta");
           }
         },
         child: Text(
