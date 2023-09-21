@@ -1,3 +1,5 @@
+import 'package:mesa_ayuda/models/Seguimiento.dart';
+
 class Ticket {
   late int id;
   late String estatus;
@@ -9,6 +11,7 @@ class Ticket {
   late String prioridad;
   late String descripcion;
   late int sintomaId;
+  late List<Seguimiento> seguimientos;
   Ticket(this.id, this.estatus, this.area, this.categoria, this.sintoma,
       this.usuarioFinal, this.folio, this.prioridad, this.descripcion);
 

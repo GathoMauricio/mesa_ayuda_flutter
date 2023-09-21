@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../models/Seguimiento.dart';
+
 class HomeController {
   Future<List<Ticket>> apiHome() async {
     List<Ticket> lista = [];
@@ -22,25 +24,38 @@ class HomeController {
         HttpHeaders.authorizationHeader: 'Bearer $authToken',
       },
     );
-
+    //print(response.body);
     if (response.statusCode == 200) {
       try {
         String body = convert.utf8.decode(response.bodyBytes);
         var jsonData = convert.jsonDecode(body);
-        for (var item in jsonData['datos']) {
-          lista.add(Ticket(
-              item['id'],
-              item['estatus'],
-              item['area'],
-              item['categoria'],
-              item['sintoma'],
-              item['usuarioFinal'],
-              item['folio'],
-              item['prioridad'],
-              item['descripcion']));
+        for (var ticket in jsonData['datos']) {
+          List<Seguimiento> seguimientos = [];
+          //print(ticket['seguimientos']);
+          for (var seguimiento in ticket['seguimientos']) {
+            seguimientos.add(Seguimiento(
+              seguimiento['id'],
+              seguimiento['ticket_id'],
+              seguimiento['autor'],
+              seguimiento['texto'],
+              seguimiento['created_at'],
+            ));
+          }
+          Ticket aux = Ticket(
+              ticket['id'],
+              ticket['estatus'],
+              ticket['area'],
+              ticket['categoria'],
+              ticket['sintoma'],
+              ticket['usuarioFinal'],
+              ticket['folio'],
+              ticket['prioridad'],
+              ticket['descripcion']);
+          aux.seguimientos = seguimientos;
+          lista.add(aux);
         }
       } catch (e) {
-        print("Error al obtener la información");
+        print(e);
       }
     } else {
       print("Error de servidor");
