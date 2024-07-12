@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert' as convert;
 import 'dart:convert';
@@ -15,31 +17,31 @@ class UserController {
         '${dotenv.env['PROJECT_PATH']}api-login', datos);
     var response = await http.post(url);
     mensajes.quitarMensajeFlash(context);
-
+    //print(response.body);
     if (response.statusCode == 200) {
       try {
         var jsonResponse =
             convert.jsonDecode(response.body) as Map<String, dynamic>;
         if (jsonResponse['estatus'] == 1) {
-          //TODO:Confirmar si el usuario está activo
-
           SharedPreferences localStorage =
               await SharedPreferences.getInstance();
           localStorage.setString("auth_token", jsonResponse['auth_token']);
           guardarUsuarioLogeado(jsonResponse['usuario']);
           mensajes.mensajeFlash(
-              context, "Bienvenid@ " + jsonResponse['usuario']['nombre']);
+              context, "Bienvenid@ " + jsonResponse['usuario']['name']);
           return true;
         } else {
           mensajes.mensajeFlash(context, jsonResponse['mensaje']);
           return false;
         }
       } catch (e) {
+        if (kDebugMode) print(e);
         mensajes.mensajeFlash(context, "Error durante el proceso");
         return false;
       }
     } else {
-      mensajes.mensajeFlash(context, "Respuesta erronea del servidor");
+      mensajes.mensajeFlash(
+          context, "No se pudo establecer conexión con el servidor");
       print('Request failed with status: ${response.body}.');
       return false;
     }
@@ -56,6 +58,7 @@ class UserController {
         HttpHeaders.authorizationHeader: 'Bearer $authToken',
       },
     );
+    // print(response.body);
     if (response.statusCode == 200) {
       try {
         var jsonResponse =
@@ -67,6 +70,7 @@ class UserController {
           return false;
         }
       } catch (e) {
+        if (kDebugMode) print(e);
         return false;
       }
     } else {
@@ -87,7 +91,6 @@ class UserController {
         HttpHeaders.authorizationHeader: 'Bearer $authToken',
       },
     );
-
     if (response.statusCode == 200) {
       try {
         Map<String, dynamic> jsonResponse;
@@ -101,6 +104,7 @@ class UserController {
           return false;
         }
       } catch (e) {
+        if (kDebugMode) print(e);
         localStorage.remove('auth_token');
         return false;
       }
@@ -117,26 +121,90 @@ class UserController {
           "usuario",
           json.encode({
             'id': usuario['id'],
-            'rol_id': usuario['rol_id'],
-            'cliente_id': usuario['cliente_id'],
-            'estatus': usuario['estatus'],
-            'nombre': usuario['nombre'],
-            'apaterno': usuario['apaterno'],
-            'amaterno': usuario['amaterno'],
-            'telefono': usuario['telefono'],
-            'telefono_emergencia': usuario['telefono_emergencia'],
+            'rol_id': usuario['user_rol_id'],
+            'cliente_id': usuario['company_branch_id'],
+            'estatus': usuario['status'],
+            'nombre': usuario['name'],
+            'apaterno': usuario['middle_name'],
+            'amaterno': usuario['last_name'],
+            'telefono': usuario['phone'],
+            'telefono_emergencia': usuario['emergency_phone'],
             'email': usuario['email'],
-            'direccion': usuario['direccion'],
-            'imagen': usuario['imagen'],
+            'direccion': usuario['address'],
+            'imagen': usuario['image'],
           }));
     } catch (e) {
-      print(e);
+      if (kDebugMode) print(e);
     }
   }
 
   Future<Usuario> usuarioLogueado() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
+    //print(localStorage.getString("usuario"));
     return Usuario.fromJson(
         json.decode(localStorage.getString("usuario") ?? ""));
+  }
+
+  String getRolName(id) {
+    switch (id) {
+      case 1:
+        return "Administrador";
+        break;
+      case 2:
+        return "Soporte técnico";
+        break;
+      case 3:
+        return "Contacto";
+        break;
+      case 4:
+        return "SuperAdmin";
+        break;
+      default:
+        return "Undefined";
+    }
+  }
+
+  getUserImage(imagen) {
+    if (imagen == 'perfil.png') {
+      return AssetImage('assets/perfil.jpg');
+    } else {
+      return NetworkImage(
+          'http://${dotenv.env['SERVER_URL']}${dotenv.env['USER_IMAGES_PATH']}$imagen');
+    }
+  }
+
+  Future<bool> apiActualizarPassword(
+      context, currentPassword, newPassword) async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    String authToken = localStorage.getString("auth_token").toString();
+    var url = Uri.http(dotenv.env['SERVER_URL'].toString(),
+        '${dotenv.env['PROJECT_PATH']}api-actualizar-password');
+    var response = await http.post(
+      url,
+      body: {'current_password': currentPassword, 'new_password': newPassword},
+      headers: {
+        HttpHeaders.authorizationHeader: 'Bearer $authToken',
+      },
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      try {
+        Map<String, dynamic> jsonResponse;
+        String body = utf8.decode(response.bodyBytes);
+        jsonResponse = convert.jsonDecode(body) as Map<String, dynamic>;
+        if (jsonResponse['estatus'] == 1) {
+          mensajes.mensajeFlash(context, jsonResponse['mensaje']);
+          return true;
+        } else {
+          mensajes.mensajeFlash(context, jsonResponse['mensaje']);
+          return false;
+        }
+      } catch (e) {
+        if (kDebugMode) print(e);
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 }

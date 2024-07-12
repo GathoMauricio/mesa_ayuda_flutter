@@ -1,4 +1,4 @@
-package com.example.mesa_ayuda
+package com.katzesystems.ppj_help
 
 import io.flutter.embedding.android.FlutterActivity
 

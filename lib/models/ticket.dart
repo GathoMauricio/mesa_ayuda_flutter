@@ -1,3 +1,4 @@
+import 'package:mesa_ayuda/models/ArchivoAdjunto.dart';
 import 'package:mesa_ayuda/models/Seguimiento.dart';
 
 class Ticket {
@@ -11,7 +12,10 @@ class Ticket {
   late String prioridad;
   late String descripcion;
   late int sintomaId;
-  late List<Seguimiento> seguimientos;
+  late int tipoServicioId;
+  late List<Seguimiento> seguimientos = [];
+  late List<ArchivoAdjunto> archivos = [];
+  late var created_at = "";
   Ticket(this.id, this.estatus, this.area, this.categoria, this.sintoma,
       this.usuarioFinal, this.folio, this.prioridad, this.descripcion);
 
@@ -25,7 +29,8 @@ class Ticket {
         folio = json['folio'],
         prioridad = json['prioridad'],
         descripcion = json['descripcion'],
-        sintomaId = json['sintomaId'];
+        sintomaId = json['sintomaId'],
+        tipoServicioId = json['tipoServicioId'];
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -38,5 +43,6 @@ class Ticket {
         'prioridad': prioridad,
         'descripcion': descripcion,
         'sintomaId': sintomaId,
+        'tipoServicioId': tipoServicioId,
       };
 }

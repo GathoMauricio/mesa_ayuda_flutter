@@ -29,9 +29,13 @@ Future<void> mensajeEmergente(context, String titulo, String texto) async {
 }
 
 void mensajeFlash(context, String texto) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(texto)),
-  );
+  try {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(texto)),
+    );
+  } catch (e) {
+    print(e);
+  }
 }
 
 Future mensajeTest(context) async {

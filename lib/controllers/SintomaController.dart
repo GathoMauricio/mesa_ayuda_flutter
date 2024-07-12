@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert' as convert;
@@ -30,10 +31,10 @@ class SintomaController {
           lista.add(Sintoma(item['id'], item['sintoma']));
         }
       } catch (e) {
-        print(e);
+        if (kDebugMode) print(e);
       }
     } else {
-      print("Error de servidor");
+      if (kDebugMode) print("Error de servidor");
     }
     return lista;
   }

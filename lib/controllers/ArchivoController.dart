@@ -6,26 +6,20 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
-import '../models/Seguimiento.dart';
-
-class SeguimientoController {
-  Future<bool> apiStoreSeguimiento(context, Seguimiento seguimiento) async {
+class ArchivoController {
+  Future<bool> apiAdjuntarArchivo(context, data) async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     String authToken = localStorage.getString("auth_token").toString();
-    var datos = seguimiento
-        .toJson()
-        .map((key, value) => MapEntry(key, value.toString()));
-    mensajes.mensajeFlash(context, "Validando...");
-    var url = Uri.http(dotenv.env['SERVER_URL'].toString(),
-        '${dotenv.env['PROJECT_PATH']}api-guardar-seguimiento', datos);
+    mensajes.mensajeFlash(context, "Enviaando...");
     var response = await http.post(
-      url,
-      headers: {
-        HttpHeaders.authorizationHeader: 'Bearer $authToken',
-      },
-    );
+        Uri.http(dotenv.env['SERVER_URL'].toString(),
+            '${dotenv.env['PROJECT_PATH']}api-adjuntar-archivo'),
+        body: data,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $authToken',
+        });
     mensajes.quitarMensajeFlash(context);
-    print(response.body);
+
     if (response.statusCode == 200) {
       try {
         var jsonResponse =
@@ -38,13 +32,13 @@ class SeguimientoController {
           return false;
         }
       } catch (e) {
-        //print(e);
+        if (kDebugMode) print(e);
         mensajes.mensajeFlash(context, "Error durante el proceso");
         return false;
       }
     } else {
       mensajes.mensajeFlash(context, "Respuesta erronea del servidor");
-      print('Request failed with status: ${response.body}.');
+      print('Request failed with status: ${response.statusCode}.');
       return false;
     }
   }

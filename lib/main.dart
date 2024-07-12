@@ -3,19 +3,27 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mesa_ayuda/controllers/HomeController.dart';
+import 'package:mesa_ayuda/services/push_notification_service.dart';
 import 'package:mesa_ayuda/views/auth/login.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mesa_ayuda/helpers/mensajes.dart' as mensajes;
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  await PushNotificationService.initializeApp();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,6 +50,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      PushNotificationService.messageStream.listen((data) {
+        print(data);
+        mensajes.mensajeFlash(context, data['type']);
+      });
+
       var hayNuevaVersion =
           await HomeController().hayNuevaVersion() as Map<String, dynamic>;
 

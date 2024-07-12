@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -51,7 +52,7 @@ class _DescargarVersionState extends State<DescargarVersion> {
         });
       });
     } catch (e) {
-      print(e);
+      if (kDebugMode) print(e);
     }
 
     setState(() {
@@ -67,17 +68,19 @@ class _DescargarVersionState extends State<DescargarVersion> {
         decoration: const BoxDecoration(
           // color: Colors.red.withOpacity(0.1),
           image: DecorationImage(
-            image: NetworkImage(
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShp2T_UoR8vXNZXfMhtxXPFvmDWmkUbVv3A40TYjcunag0pHFS_NMblOClDVvKLox4Atw&usqp=CAU',
-              //'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx7IBkCtYd6ulSfLfDL-aSF3rv6UfmWYxbSE823q36sPiQNVFFLatTFdGeUSnmJ4tUzlo&usqp=CAU'
-            ),
-            fit: BoxFit.cover,
-          ),
+              image: AssetImage('assets/restaurant_wallpaper.jpg'),
+              fit: BoxFit.cover,
+              opacity: 1),
         ),
         child: Center(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/logo_ppj.png',
+              height: 180,
+              width: 180,
+            ),
             Text(
               "Mesa de Ayuda",
               style: GoogleFonts.indieFlower(

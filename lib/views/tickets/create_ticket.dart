@@ -27,6 +27,7 @@ class _CreateTicketState extends State<CreateTicket> {
   String sintoma = "";
 
   int sintomaId = 0;
+  int tipoServicioId = 0;
   String prioridad = "";
   String descripcion = "";
 
@@ -64,14 +65,15 @@ class _CreateTicketState extends State<CreateTicket> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: Text("Iniciar Ticket", style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Color.fromRGBO(7, 121, 84, 1),
+        title: Text("Iniciar Caso", style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState?.save();
-                if (sintomaId > 0) {
+                if (tipoServicioId > 0) {
                   print("Enviar petición");
                   Ticket ticket = Ticket(
                       0,
@@ -84,6 +86,7 @@ class _CreateTicketState extends State<CreateTicket> {
                       "prioridad",
                       "descripcion");
                   ticket.sintomaId = sintomaId;
+                  ticket.tipoServicioId = tipoServicioId;
                   ticket.prioridad = prioridad;
                   ticket.descripcion = descripcion;
                   if (await TicketController()
@@ -91,8 +94,8 @@ class _CreateTicketState extends State<CreateTicket> {
                     Navigator.pop(context);
                   }
                 } else {
-                  mensajes.mensajeFlash(context,
-                      "Por favor selecciona Área, Categoría y Sintoma");
+                  mensajes.mensajeFlash(
+                      context, "Por favor selecciona Área y tipo se servicio");
                 }
               }
             },
@@ -101,119 +104,163 @@ class _CreateTicketState extends State<CreateTicket> {
           )
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              //Area
-              DropdownButtonFormField(
-                //SELECT AREAS
-                decoration: InputDecoration(labelText: 'Área'),
-                value: area,
-                items: areas.map((Area area) {
-                  return DropdownMenuItem<String>(
-                    onTap: () {
-                      setState(() {
-                        categorias = [
-                          Categoria(0, "--Seleccione una opción--")
-                        ];
-                        categoria = categorias[0].categoria;
-                        sintomas = [Sintoma(0, "--Seleccione una opción--")];
-                        sintoma = sintomas[0].sintoma;
-                      });
-                      if (area.id > 0) {
-                        _otenerCategorias(area.id);
-                      }
-                    },
-                    value: area.area,
-                    child: Text(
-                      area.area,
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (Object? value) {},
-              ),
-              DropdownButtonFormField(
-                //SELECT CATEGORIAS
-                decoration: InputDecoration(labelText: 'Categoría'),
-                value: categoria,
-                items: categorias.map((Categoria categoria) {
-                  return DropdownMenuItem<String>(
-                    onTap: () {
-                      setState(() {
-                        sintomas = [Sintoma(0, "--Seleccione una opción--")];
-                        sintoma = sintomas[0].sintoma;
-                      });
-                      if (categoria.id > 0) {
-                        _otenerSintomas(categoria.id);
-                      }
-                    },
-                    value: categoria.categoria,
-                    child: Text(
-                      categoria.categoria,
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (Object? value) {},
-              ),
-              DropdownButtonFormField(
-                //SELECT SINTOMAS
-                decoration: InputDecoration(labelText: 'Sintomas'),
-                value: sintoma,
-                items: sintomas.map((Sintoma sintoma) {
-                  return DropdownMenuItem<String>(
-                    onTap: () {
-                      sintomaId = sintoma.id;
-                    },
-                    value: sintoma.sintoma,
-                    child: Text(
-                      sintoma.sintoma,
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (Object? value) {},
-              ),
-              DropdownButtonFormField(
-                value: prioridad,
-                items: prioridades.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    prioridad = value!;
-                  });
-                },
-                decoration: InputDecoration(labelText: 'Prioridad'),
-                validator: (value) {
-                  if (value == null) {
-                    return 'Por favor selecciona la prioridad';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Descripción'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor ingresa la descripción';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  descripcion = value!;
-                },
-                maxLines: 4,
-              ),
-            ],
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage('assets/restaurant_wallpaper.jpg'),
+              fit: BoxFit.cover,
+              opacity: 1),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                //Area
+                DropdownButtonFormField(
+                  //SELECT AREAS
+                  decoration: const InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    filled: true,
+                    fillColor: Color.fromARGB(240, 230, 221, 221),
+                    labelText: "Área",
+                    labelStyle: TextStyle(color: Color.fromRGBO(7, 121, 84, 1)),
+                  ),
+                  value: area,
+                  items: areas.map((Area area) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {
+                        setState(() {
+                          categorias = [
+                            Categoria(0, "--Seleccione una opción--")
+                          ];
+                          categoria = categorias[0].categoria;
+                          sintomas = [Sintoma(0, "--Seleccione una opción--")];
+                          sintoma = sintomas[0].sintoma;
+                        });
+                        if (area.id > 0) {
+                          _otenerCategorias(area.id);
+                        }
+                      },
+                      value: area.area,
+                      child: Text(
+                        area.area,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Color.fromRGBO(7, 121, 84, 1),
+                          fontSize: 13.0,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (Object? value) {},
+                ),
+                SizedBox(height: 10.0),
+                DropdownButtonFormField(
+                  //SELECT TIPOS SERVICIO (categorias)
+                  decoration: const InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    filled: true,
+                    fillColor: Color.fromARGB(240, 230, 221, 221),
+                    labelText: "Tipo de servicio",
+                    labelStyle: TextStyle(color: Color.fromRGBO(7, 121, 84, 1)),
+                  ),
+                  value: categoria,
+                  items: categorias.map((Categoria tipoServicio) {
+                    return DropdownMenuItem<String>(
+                      onTap: () {
+                        tipoServicioId = tipoServicio.id;
+                      },
+                      value: tipoServicio.categoria,
+                      child: Text(
+                        tipoServicio.categoria,
+                        style: TextStyle(
+                          color: Color.fromRGBO(7, 121, 84, 1),
+                          fontSize: 13.0,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (Object? value) {},
+                ),
+                SizedBox(height: 10.0),
+                DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    filled: true,
+                    fillColor: Color.fromARGB(240, 230, 221, 221),
+                    labelText: "Prioridad",
+                    labelStyle: TextStyle(color: Color.fromRGBO(7, 121, 84, 1)),
+                  ),
+                  value: prioridad,
+                  items: prioridades.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                          color: Color.fromRGBO(7, 121, 84, 1),
+                          fontSize: 13.0,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      prioridad = value!;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Por favor selecciona la prioridad';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10.0),
+                TextFormField(
+                  decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    filled: true,
+                    fillColor: Color.fromARGB(240, 230, 221, 221),
+                    labelStyle: TextStyle(color: Color.fromRGBO(7, 121, 84, 1)),
+                    labelText: 'Descripción',
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor ingresa la descripción';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    descripcion = value!;
+                  },
+                  maxLines: 4,
+                ),
+              ],
+            ),
           ),
         ),
       ),

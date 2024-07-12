@@ -8,9 +8,10 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/> 
 
     <application
-        android:label="mesa_ayuda"
+        android:label="My HelpDesk PJ"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher" 
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
