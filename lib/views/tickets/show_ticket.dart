@@ -68,7 +68,7 @@ class _ShowTicketState extends State<ShowTicket> {
                 Text(seguimiento.texto),
                 Text(
                   seguimiento.createdAt,
-                  style: TextStyle(fontSize: 12.0),
+                  style: const TextStyle(fontSize: 12.0),
                 ),
               ],
             ),
@@ -86,19 +86,19 @@ class _ShowTicketState extends State<ShowTicket> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color.fromRGBO(7, 121, 84, 1),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color.fromRGBO(7, 121, 84, 1),
         title: Text(
           "Folio: ${widget.ticket.folio}",
           style: const TextStyle(color: Colors.white),
         ),
         actions: [
-          (currentUser.rol_id == 1)
+          (currentUser.rol_id == 1 || currentUser.rol_id == 2)
               ? IconButton(
                   onPressed: () {
                     _verCambiarEstatus(context);
                   },
-                  icon: Icon(Icons.edit))
+                  icon: const Icon(Icons.edit))
               : const SizedBox(),
         ],
       ),
@@ -149,7 +149,7 @@ class _ShowTicketState extends State<ShowTicket> {
   Widget ticketBody() {
     return RefreshIndicator(
       color: Colors.white,
-      backgroundColor: Color.fromRGBO(7, 121, 84, 1),
+      backgroundColor: const Color.fromRGBO(7, 121, 84, 1),
       strokeWidth: 4.0,
       onRefresh: () async {
         currentTicket =
@@ -210,9 +210,9 @@ class _ShowTicketState extends State<ShowTicket> {
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0)),
                 Text(currentTicket.descripcion),
-                Row(children: <Widget>[
+                const Row(children: <Widget>[
                   Expanded(child: Divider()),
-                  const Text(
+                  Text(
                     "SEGUIMIENTO",
                     style: TextStyle(
                         color: Colors.red, fontWeight: FontWeight.bold),
@@ -220,14 +220,14 @@ class _ShowTicketState extends State<ShowTicket> {
                   Expanded(child: Divider()),
                 ]),
                 Column(
-                  children: _segimientos.length > 0
+                  children: _segimientos.isNotEmpty
                       ? _segimientos
-                      : [Text("Sin seguimiento")],
+                      : [const Text("Sin seguimiento")],
                 ),
-                Row(
+                const Row(
                   children: <Widget>[
                     Expanded(child: Divider()),
-                    const Text(
+                    Text(
                       "ADJUNTOS",
                       style: TextStyle(
                           color: Colors.red, fontWeight: FontWeight.bold),
@@ -237,10 +237,10 @@ class _ShowTicketState extends State<ShowTicket> {
                 ),
                 Column(
                   children: (lista_adjuntos.isEmpty)
-                      ? [Text('Sin adjuntos')]
+                      ? [const Text('Sin adjuntos')]
                       : _listaArchivosAdjuntos(currentTicket.archivos),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 200,
                 )
               ],
@@ -251,33 +251,30 @@ class _ShowTicketState extends State<ShowTicket> {
     );
   }
 
-  List<Widget> _listaArchivosAdjuntos(data_archivos) {
+  List<Widget> _listaArchivosAdjuntos(dataArchivos) {
     lista_adjuntos = [];
-    for (var archivo in data_archivos) {
+    for (var archivo in dataArchivos) {
       setState(() {
         lista_adjuntos.add(ListTile(
           leading: CircleAvatar(
-            backgroundImage: NetworkImage('http://' +
-                dotenv.env['SERVER_URL'].toString() +
-                dotenv.env['FILES_PATH'].toString() +
-                archivo.name),
+            backgroundImage: NetworkImage(
+                'http://${dotenv.env['SERVER_URL']}${dotenv.env['FILES_PATH']}' +
+                    archivo.name),
           ),
           title: Text(archivo.author,
               style: const TextStyle(
                   color: Color.fromRGBO(7, 121, 84, 1), fontSize: 14.0)),
           subtitle: Text(
             archivo.created_at,
-            style: TextStyle(fontSize: 11),
+            style: const TextStyle(fontSize: 11),
           ),
-          trailing: Icon(Icons.open_in_full),
+          trailing: const Icon(Icons.open_in_full),
           onTap: () {
             //print("Ver imagen completa");
             _verImagenCompleta(
                 context,
                 archivo.name,
-                'http://' +
-                    dotenv.env['SERVER_URL'].toString() +
-                    dotenv.env['FILES_PATH'].toString() +
+                'http://${dotenv.env['SERVER_URL']}${dotenv.env['FILES_PATH']}' +
                     archivo.name);
           },
         ));
@@ -329,7 +326,7 @@ class _ShowTicketState extends State<ShowTicket> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Agregar Seguimiento',
               style: TextStyle(
                   color: Color.fromRGBO(7, 121, 84, 1),
@@ -342,7 +339,7 @@ class _ShowTicketState extends State<ShowTicket> {
               child: ListView(
                 children: [
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -411,7 +408,7 @@ class _ShowTicketState extends State<ShowTicket> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Adjuntar imagen',
               style: TextStyle(
                   color: Color.fromRGBO(7, 121, 84, 1),
@@ -437,21 +434,21 @@ class _ShowTicketState extends State<ShowTicket> {
                       onPressed: () {
                         _seleccionarArchivoCamara();
                       },
-                      child: Row(
+                      child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Icon(Icons.camera_enhance),
                             Text("Subir desde Cámara")
                           ]),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
                     ElevatedButton(
                       onPressed: () {
                         _seleccionarArchivoGaleria();
                       },
-                      child: Row(
+                      child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Icon(Icons.image_search),
@@ -490,11 +487,11 @@ class _ShowTicketState extends State<ShowTicket> {
   }
 
   _seleccionarArchivoCamara() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     try {
-      var archivo = await _picker.pickImage(source: ImageSource.camera);
+      var archivo = await picker.pickImage(source: ImageSource.camera);
       imagePath = archivo!.path;
-      List<int> bytes = await File(imagePath).readAsBytesSync();
+      List<int> bytes = File(imagePath).readAsBytesSync();
       //print(bytes);
       var imagen64 = base64Encode(bytes);
       var data = {
@@ -520,11 +517,11 @@ class _ShowTicketState extends State<ShowTicket> {
   }
 
   _seleccionarArchivoGaleria() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     try {
-      var archivo = await _picker.pickImage(source: ImageSource.gallery);
+      var archivo = await picker.pickImage(source: ImageSource.gallery);
       imagePath = archivo!.path;
-      List<int> bytes = await File(imagePath).readAsBytesSync();
+      List<int> bytes = File(imagePath).readAsBytesSync();
       //print(bytes);
       var imagen64 = base64Encode(bytes);
       var data = {
